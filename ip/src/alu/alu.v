@@ -1,7 +1,7 @@
 
 module alu #(
     parameter DATA_WIDTH = 32,
-    parameter CTRL_WIDTH = 4,
+    parameter CTRL_WIDTH = 5,
     parameter STATUS_WIDTH = 4,
     parameter SHAMT_WIDTH = 5,
     parameter DELAY = 0
@@ -63,32 +63,34 @@ module alu #(
     dataOutput_tmp <= 32'b0;
 
     case (ctrl)
-        4'h0: dataOutput_tmp <= data[1] & data[0]; //and
-        4'h1: dataOutput_tmp <= data[1] | data[0]; //or
-        4'h2: dataOutput_tmp <= ~(data[1] | data[0]); //nor
-        4'h3: dataOutput_tmp <= data[1] ^ data[0]; //xor
-        4'h4: begin //add
+        5'h0: dataOutput_tmp <= data[1] & data[0]; //and
+        5'h1: dataOutput_tmp <= data[1] | data[0]; //or
+        5'h2: dataOutput_tmp <= ~(data[1] | data[0]); //nor
+        5'h3: dataOutput_tmp <= data[1] ^ data[0]; //xor
+        5'h4: begin //add
               dataOutput_tmp <= add[DATA_WIDTH-1:0];
               carrybit <= add[DATA_WIDTH];
               end
-        4'h5: begin//sub
+        5'h5: begin//sub
               dataOutput_tmp <= sub[DATA_WIDTH-1:0];
               carrybit <= sub[DATA_WIDTH];
               end
-        4'h6: begin
+        5'h6: begin
               dataOutput_tmp <= mult[DATA_WIDTH-1:0];
               lo_tmp <= mult[DATA_WIDTH-1:0];
               hi_tmp <= mult[2*DATA_WIDTH-1:DATA_WIDTH];
               end //mult
-        4'h7: dataOutput_tmp <= ((data[1] < data[0])? 32'b1 : 32'b0); //set on less than
-        4'h8: dataOutput_tmp <= data[0] >> shamt ; //shift right logical
-        4'h9: dataOutput_tmp <= data[0] << shamt; //shift left logical
-        4'ha: dataOutput_tmp <= $signed($signed(data[0]) >>> shamt); //shift right arithmetic
-        4'hb: dataOutput_tmp <= hi_tmp; //mfhi
-        4'hc: dataOutput_tmp <= lo_tmp; //mflo
-        4'hd: hi_tmp <= data[0]; //mthi A
-        4'he: lo_tmp <= data[0];
-        4'hf: dataOutput_tmp <= data[1] >> data[0];
+        5'h7: dataOutput_tmp <= ((data[1] < data[0])? 32'b1 : 32'b0); //set on less than
+        5'h8: dataOutput_tmp <= data[0] >> shamt ; //shift right logical
+        5'h9: dataOutput_tmp <= data[0] << shamt; //shift left logical
+        5'ha: dataOutput_tmp <= $signed($signed(data[0]) >>> shamt); //shift right arithmetic
+        5'hb: dataOutput_tmp <= hi_tmp; //mfhi
+        5'hc: dataOutput_tmp <= lo_tmp; //mflo
+        5'hd: hi_tmp <= data[0]; //mthi A
+        5'he: lo_tmp <= data[0]; //mtlo
+        5'hf: dataOutput_tmp <= data[1] >> data[0];
+        5'h10: dataOutput_tmp <= data[1] << data[0];
+        5'h11: dataOutput_tmp <= $signed($signed(data[1]) >>> data[0]);
         /*
         4'hb: dataOutput_tmp <= ((data[0] < 0)? 32'b1 : 32'b0); //check if less than zero
         4'hc: dataOutput_tmp <= ((data[0] <= 0)? 32'b1 : 32'b0); //check if less than or equal zero
