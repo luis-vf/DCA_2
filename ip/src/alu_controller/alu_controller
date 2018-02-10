@@ -1,0 +1,16 @@
+module alu_controller #(
+//PARAMETERS
+    parameter CTRL_WIDTH = 4
+  )(
+    //inputs and outputs
+    input [2:0] ALUop,
+    input [5:0]functioncode,
+    output [4:0]ALU_ctrl
+);
+
+
+always @ ( * ) begin
+
+end
+
+endmodule
