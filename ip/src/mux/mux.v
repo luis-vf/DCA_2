@@ -48,15 +48,14 @@ integer j,k,l;
  **********/
 
  `UNPACK_ARRAY(BIT_WIDTH,DEPTH,tmp,dataIn,U_BLK_0,idx_0)
- always @ (select,dataIn,tmpOut) begin
+ always @ (select,dataIn) begin
  //this loop goes iterates through the number of inputs for the mux
    for(j=0;j < DEPTH; j=j+1) begin
 		//if the select line corresponds to the value at the iterator, the input at that depth is pass through the output
       if(select[log2(DEPTH)-1:0] == j) begin //compares the select input but only for the max bits for a given depth
-        for(k=0; k<BIT_WIDTH; k=k+1) begin //For all depth of input array
+			 tmpOut = 0;
           //this selects the column/mux input line specified by the select and puts that in a register
-          tmpOut[k] = tmp[j][k];
-        end
+          tmpOut = tmp[j][BIT_WIDTH-1:0];
       end
    end
  end
@@ -72,7 +71,7 @@ integer j,k,l;
 /**********
  * Output Combinatorial Logic
  **********/
-generate
+//generate
   assign muxout = tmpOut;
-endgenerate
+//endgenerate
 endmodule

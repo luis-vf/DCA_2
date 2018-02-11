@@ -64,16 +64,16 @@ wire [DATA_WIDTH*RD_DEPTH-1:0] delay_out;
 genvar i;
 generate
     for (i = 0;i < RD_DEPTH; i = i+1)
-    begin :multiplexer
-    mux #(
-      .BIT_WIDTH(DATA_WIDTH),
-      .DEPTH(REG_DEPTH),
-      .SEL_WIDTH(ADDR_WIDTH)
-      )u(
-        .dataIn(register_vect),
-        .select(readreg_num[i][ADDR_WIDTH-1:0]),
-        .muxout(out[i][DATA_WIDTH-1:0])
-    );
+    begin //multiplexer
+        mux #(
+          .BIT_WIDTH(DATA_WIDTH),
+          .DEPTH(REG_DEPTH),
+          .SEL_WIDTH(ADDR_WIDTH)
+          )u_mux(
+            .dataIn(register_vect),
+            .select(readreg_num[i][ADDR_WIDTH-1:0]),
+            .muxout(out[i][DATA_WIDTH-1:0])
+        );
 
     end
 endgenerate
@@ -81,9 +81,6 @@ endgenerate
  * Synchronous Logic
  **********/
 
- initial begin
-   register[0][DATA_WIDTH-1:0] = 0;
- end
 
  always @(posedge clk) begin
   if(rst) begin
@@ -111,7 +108,7 @@ endgenerate
  * Components
  **********/
  delay #(
-     .BIT_WIDTH(DATA_WIDTH),
+     .BIT_WIDTH(DATA_WIDTH*RD_DEPTH),
      .DELAY(DELAY)
  )U_REG(
      .clk(clk),

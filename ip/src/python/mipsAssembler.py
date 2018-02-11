@@ -9,7 +9,7 @@ asm = open("test0.txt","r")
 
 a = asm.readlines()
 
-start_addr = '0x00400000'
+start_addr = '0x000000'
 
 mips_dict = {
     #standard rtype instructions
@@ -249,7 +249,7 @@ labels()
 for i in range(len(asm_dict)):
     output_dict[i] = ''.join(checktype(i))
 
-f = open('demo.mif','w')
+f = open('test0l.mif','w')
 
 f.write(''+ '\n')
 f.write('WIDTH=32;'+ '\n')

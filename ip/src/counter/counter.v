@@ -3,7 +3,7 @@
 module counter #(
 	parameter DATA_WIDTH = 4,
     parameter COUNT_START = 0,
-    parameter COUNT_END = 2**(DATA_WIDTH-1),
+    parameter COUNT_END = 2**(DATA_WIDTH) - 1,
     parameter STEP = 1
 )(
 	input clk,
@@ -23,7 +23,7 @@ module counter #(
             if(load == 1'b1) begin
                 tmp <= loadval;
             end
-            else if(en == 1'b1) begin
+            if(en == 1'b1) begin
                 tmp <= tmp + STEP;
             end
             else begin
