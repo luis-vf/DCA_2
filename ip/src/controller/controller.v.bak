@@ -1,0 +1,217 @@
+module controller #(
+
+
+    )(
+    //input clk,
+    input  [5:0]OPCODE,
+    output [1:0]RegDST,
+    output RegWrite,
+    output ALUSrc,
+    output jump,
+    output MemRead,
+    output MemWrite,
+    output [1:0]MemtoReg,
+    output branch_ctrl,
+    output [3:0]ALUop
+);
+
+localparam aluop_rtype = 4'h0;
+localparam aluop_add = 4'h1;
+localparam aluop_sub = 4'h2;
+localparam aluop_and = 4'h3;
+localparam aluop_or = 4'h4;
+localparam aluop_xor = 4'h5;
+localparam aluop_nor = 4'h6;
+localparam aluop_slt = 4'h7;
+localparam aluop_sll = 4'h8;
+
+
+localparam rtype   = 6'b000000;
+localparam branch_ri  = 6'b000001;
+
+localparam j    = 6'b000010;
+localparam jal  = 6'b000011;
+localparam beq  = 6'b000100;
+localparam bne  = 6'b000101;
+localparam blez = 6'b000110;
+localparam bgtz = 6'b000111;
+
+localparam addi = 6'b001000;
+localparam andi = 6'b001100;
+localparam addiu= 6'b001001;
+localparam slti = 6'b001010;
+localparam sltiu= 6'b001011;
+localparam ori  = 6'b001101;
+localparam xori = 6'b001110;
+
+localparam lw   = 6'b100011;
+localparam lwl  = 6'b100010;
+localparam lwr  = 6'b100110;
+localparam lh   = 6'b100001;
+localparam lui  = 6'b001111;
+localparam lbu  = 6'b100100;
+localparam lhu  = 6'b100101;
+localparam lb   = 6'b100000;
+localparam sb   = 6'b101000;
+localparam sh   = 6'b101001;
+localparam sw   = 6'b101011;
+localparam swr  = 6'b101110;
+localparam swl  = 6'b101010;
+
+reg [1:0]RegDST_t;
+reg RegWrite_t;
+reg jump_t;
+reg branch_ctrl_t;
+reg ALUSrc_t;
+reg MemRead_t;
+reg MemWrite_t;
+reg [1:0]MemtoReg_t;
+reg [3:0]ALUop_t;
+
+always @ ( * ) begin
+    RegDST_t        <= 2'h0;
+    RegWrite_t      <= 1'b0;
+    ALUSrc_t        <= 1'b0;
+    branch_ctrl_t   <= 1'b0;
+    jump_t          <= 1'b0;
+    MemRead_t       <= 1'b0;
+    MemWrite_t      <= 1'b0;
+    MemtoReg_t      <= 2'h0;
+    ALUop_t         <= 4'h0;
+
+    case (OPCODE)
+        rtype:  RegDST_t <= 1'b1;
+                RegWrite_t <= 1'b1
+                ALUop_t <= aluop_rtype;
+
+        branch_ri:branch_ctrl_t <= 1'b1;
+                ALUop_t <= aluop_sub;
+
+        j:      jump_t <= 1'b1;
+
+        jal:    jump_t <= 1'b1;
+                RegWrite_t <= 2'h2;
+                MemtoReg_t <= 2'h2;
+
+        blez:   branch_ctrL_t <= 1'b1;
+                ALUop_t <= aluop_sub;
+
+        bgtz:   branch_ctrL_t <= 1'b1;
+                ALUop_t <= aluop_sub;
+
+        beq:    branch_ctrL_t <= 1'b1;
+                ALUop_t <= aluop_sub;
+
+        bne:    branch_ctrL_t <= 1'b1;
+                ALUop_t <= aluop_sub;
+
+        addi:   ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        addiu:  ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        slti:   ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_slt;
+
+        sltiu:  ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_slt;
+
+        andi:   ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_and;
+
+        ori:    ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_or;
+
+        xori:   ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_xor;
+
+        lw:     ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lwl:    ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lwr:    ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lh:     ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lbu:    ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lhu:    ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lb:     ALUSrc_t <= 1'b1;
+                MemtoReg_t <= 2'h1;
+                RegWrite_t <= 1'b1;
+                MemRead_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        lui:    ALUSrc_t <= 1'b1;
+                RegWrite_t <= 1'b1;
+                ALUop_t <= aluop_sll;
+
+        sb:     ALUSrc_t <= 1'b1;
+                MemWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        sh:     ALUSrc_t <= 1'b1;
+                MemWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        sw:     ALUSrc_t <= 1'b1;
+                MemWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        swr:    ALUSrc_t <= 1'b1;
+                MemWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+
+        swl:    ALUSrc_t <= 1'b1;
+                MemWrite_t <= 1'b1;
+                ALUop_t <= aluop_add;
+
+        default:ALUop_t <= aluop_add;
+    endcase
+end
+
+assign RegDST = RegDST_t;
+assign RegWrite = RegWrite_t;
+assign ALUSrc = ALUSrc_t;
+assign PCSrc = PCSrc_t;
+assign MemRead = MemRead_t;
+assign MemWrite = MemWrite_t;
+assign MemtoReg = MemtoReg_t;
+assign ALUop = ALUop_t;
+assign branch_ctrl = branch_ctrl_t;
+
+endmodule // controller
