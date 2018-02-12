@@ -1,0 +1,213 @@
+module MIPSCPU #(
+    parameter DATA_WIDTH = 32,
+    parameter RD_DEPTH = 2,
+    parameter ADDR_WIDTH = log2(REG_DEPTH),  //address width, for the MIPS the operands are addresses, so operand
+    parameter DELAY = 0
+    parameter DATA_WIDTH_IN = 16,
+    parameter DATA_WIDTH_OUT = 32,
+    parameter CTRL_WIDTH = 5,
+    parameter STATUS_WIDTH = 4,
+    parameter SHAMT_WIDTH = 5
+    )(
+    input clk,
+    input en,
+)
+
+wire mux_jump_out;
+wire pc_out;
+wire [DATA_WIDTH-1:0]Instruction;
+wire [4:0]write_register;
+wire [DATA_WIDTH-1:0]rddata1;
+wire [DATA_WIDTH-1:0]rddata2;
+wire [DATA_WIDTH-1:0]mux_datamem;
+wire [4:0]alu_ctrl;
+wire [DATA_WIDTH-1:0]mux_alu_in1;
+wire [DATA_WIDTH-1:0]alu_out;
+wire [3:0] status;
+
+reg en_n;
+always @ ( * ) begin
+    en_n <= ~en;
+end
+
+
+//Components
+
+//THE PROGRAM COUNTER
+counter #(
+    .DATA_WIDTH(6),
+    .COUNT_START(0),
+    .STEP(4)
+    )U_PC_COUNTER(
+    .clk(clk),
+    .rst(rst),
+    .en(en),
+    .load(1'b1),
+    .loadval(mux_jump_out),
+    .dataOut(pc_out)
+);
+
+rom	Instruction_Memory (
+	.address (pc_out),
+	.clock (clk),
+	.q (Instruction)
+	);
+
+mux #(
+    .BIT_WIDTH(5),
+    .DEPTH(2),
+
+    )U_MUX_REGFILE(
+    .dataIn({Instruction[15:11],Instruction[20:15],5'h1f}),
+    .select(RegDST), //this is register 31 used for jump and link
+    .muxout(write_register)
+)
+
+register_file #(
+    .DATA_WIDTH(DATA_WIDTH),
+    .RD_DEPTH(2),
+    .REG_DEPTH(5),
+    .ADDR_WIDTH(6),
+    .DELAY(0)
+    )U_REGFILE(
+    .clk(clk2),
+    .rst(rst),
+    .wr(write_register),
+    .en_n(en_n),
+    .rr({Instruction[20:15],Instruction[25:21]}),
+    .d(mux_datamem),
+    .q({rddata2,rddata1})
+);
+
+mux #(
+    .BIT_WIDTH(DATA_WIDTH),
+    .DEPTH(DEPTH),
+
+    )U_MUX_ALU(
+    .dataIn({signextend_val,rddata2}),
+    .select(ALUSrc),
+    .muxout(mux_alu_in1)
+)
+
+alu #(
+    .DATA_WIDTH(DATA_WIDTH),
+    .CTRL_WIDTH(5),
+    .STATUS_WIDTH(4),
+    .SHAMT_WIDTH(5),
+    .DELAY(0)
+    )U_ALU(
+    .clk(clk2),
+    .en_n(en_n),
+    .rst(rst),
+    .dataIn({mux_alu_in1,rddata1}),
+    .ctrl(alu_ctrl),
+    .shamt(Instruction[10:6]),
+    .dataOut(alu_out),
+    .status(status)
+);
+
+alu_controller U_ALUCTRL(
+    .ALUop(),
+    .functioncode(),
+    .ALU_ctrl()
+);
+
+
+
+mux #(
+    .BIT_WIDTH(DATA_WIDTH),
+    .DEPTH(DEPTH),
+
+    )U_MUX_BRANCH(
+    .dataIn(),
+    .select(),
+    .muxout()
+)
+
+mux #(
+    .BIT_WIDTH(DATA_WIDTH),
+    .DEPTH(DEPTH),
+
+    )U_MUX_JUMP(
+    .dataIn(),
+    .select(),
+    .muxout()
+)
+
+
+
+mux #(
+    .BIT_WIDTH(DATA_WIDTH),
+    .DEPTH(DEPTH),
+
+    )U_MUX_DATAMEM(
+    .dataIn(),
+    .select(),
+    .muxout()
+)
+
+
+
+
+ram	Data_Memory (
+	.address ( address_sig ),
+	.clock ( clock_sig ),
+	.data ( data_sig ),
+	.wren ( wren_sig ),
+	.q (mux_datamem)
+	);
+
+
+
+
+
+controller U_CTRL(
+    .OPCODE(),
+    .RegDST(),
+    .RegWrite(),
+    .ALUSrc(),
+    .jump(),
+    .MemRead(),
+    .MemWrite(),
+    .MemtoReg(),
+    .branch_ctrl(),
+    .ALUop()
+);
+
+signextend #(
+    .DATA_WIDTH_IN(),
+    .DEPTH(),
+    .DATA_WIDTH_OUT(),
+    .DELAY()
+    )U_SIGNEXTEND(
+    .clk(),
+    .rst(),
+    .en_n(),
+    .dataIn(),
+    .dataOut()
+);
+
+
+
+
+
+
+register_file #(
+    .DATA_WIDTH(),
+    .RD_DEPTH(),
+    .REG_DEPTH(),
+    .ADDR_WIDTH(),
+    .DELAY()
+    )U_REGFILE(
+    .clk(),
+    .rst(),
+    .wr(),
+    .en_n(),
+    .rr(),
+    .d(),
+    .q()
+);
+
+
+
+endmodule

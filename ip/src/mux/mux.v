@@ -50,6 +50,7 @@ integer j,k,l;
  `UNPACK_ARRAY(BIT_WIDTH,DEPTH,tmp,dataIn,U_BLK_0,idx_0)
  always @ (select,dataIn) begin
  //this loop goes iterates through the number of inputs for the mux
+ tmpOut = 0;
    for(j=0;j < DEPTH; j=j+1) begin
 		//if the select line corresponds to the value at the iterator, the input at that depth is pass through the output
       if(select[log2(DEPTH)-1:0] == j) begin //compares the select input but only for the max bits for a given depth

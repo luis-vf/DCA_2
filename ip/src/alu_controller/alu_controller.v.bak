@@ -1,6 +1,6 @@
 module alu_controller(
     //inputs and outputs
-    input[2:0]  ALUop,
+    input[3:0]  ALUop,
     input[5:0]  functioncode,
     output[4:0] ALU_ctrl,
     output Jumpreg
@@ -103,13 +103,13 @@ module alu_controller(
         4'h3: ctrlout <= alu_AND;
         4'h4: ctrlout <= alu_OR;
         4'h5: ctrlout <= alu_XOR;
-        4'h6: ctrlout <= alu_SLT;
-        4'h7: ctrlout <= alu_SLL;
+        4'h6: ctrlout <= alu_NOR;
+        4'h7: ctrlout <= alu_SLT;
+        4'h8: ctrlout <= alu_SLL;
         default: ctrlout <= 5'h0;
       endcase
     end
 
     assign ALU_ctrl = ctrlout;
-	 assign Jumpreg = JR;
 
 endmodule

@@ -110,7 +110,7 @@ always @ ( * ) begin
                 ALUop_t <= aluop_sub; end
 
         addi:   begin
-					 ALUSrc_t <= 1'b1;
+				ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 

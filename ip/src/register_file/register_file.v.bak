@@ -64,8 +64,8 @@ wire [DATA_WIDTH*RD_DEPTH-1:0] delay_out;
 genvar i;
 generate
     for (i = 0;i < RD_DEPTH; i = i+1)
-    begin :multiplexer
-	 mux #(
+    begin //multiplexer
+        mux #(
           .BIT_WIDTH(DATA_WIDTH),
           .DEPTH(REG_DEPTH),
           .SEL_WIDTH(ADDR_WIDTH)

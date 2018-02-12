@@ -55,11 +55,7 @@ module alu #(
  * Glue Logic
  **********/
  always@(ctrl,shamt,dataIn,add,sub,mult) begin
-
-    status_tmp <= 4'b0;
     carrybit <= 1'b0;
-    lo_tmp <= lo_tmp;
-    hi_tmp <= hi_tmp;
     dataOutput_tmp <= 32'b0;
 
     case (ctrl)

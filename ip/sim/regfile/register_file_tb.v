@@ -26,7 +26,7 @@ reg [ADDR_WIDTH*RD_DEPTH-1:0] rr; //reg read address as vectorized array
 reg [ADDR_WIDTH-1:0] rw; //reg write address
 reg [DATA_WIDTH-1:0] d; //input data to be written to reg
 wire [DATA_WIDTH*RD_DEPTH-1:0] q; //output data from reg reads, vectorized array
-reg en_n = 1;
+reg en_n = 0;
 
 reg simState = 0;
 
@@ -41,14 +41,14 @@ always begin
 end
 
 initial begin
+	simState = 0;
 	$display($time, "- Starting Sim");
 	$monitor("Changes in output: %h",d);
 	clk = 0;
 	rst = 1;
-	en_n = 0;
 	`DELAY(5)
 	rst = 0;
-	rr = 10'b1010101010;
+	rr = 10'b1101100100;
 	d= 32'hdcaf484c;
 	`DELAY(5)
 	rw = 5'b11011; //this is the address we are writing to in the register file
@@ -69,7 +69,6 @@ initial begin
 	$display($time, "- End Simulation");
 
 	simState = 1;
-	$stop;
 end
 /**********
  * Components
