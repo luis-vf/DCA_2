@@ -7,6 +7,7 @@ module signextend #(
     input clk,
     input rst,
     input en_n,
+    input IsSigned,
     input [DATA_WIDTH_IN*DEPTH-1:0]dataIn,
     output  [DATA_WIDTH_OUT*DEPTH-1:0]dataOut
 );
@@ -29,7 +30,12 @@ always @ (dataIn) begin
     for(i = 0;i < DEPTH;i = i + 1)
     begin
         extend[i][DATA_WIDTH_IN-1:0] <= tmp[i][DATA_WIDTH_IN-1:0];
-        extend[i][DATA_WIDTH_OUT-1:DATA_WIDTH_IN] <= {(DATA_WIDTH_OUT - DATA_WIDTH_IN){tmp[i][DATA_WIDTH_IN-1]}};
+        if(isSigned == 1'b1) begin
+          extend[i][DATA_WIDTH_OUT-1:DATA_WIDTH_IN] <= {(DATA_WIDTH_OUT - DATA_WIDTH_IN){tmp[i][DATA_WIDTH_IN-1]}};
+        end
+        else begin
+          extend[i][DATA_WIDTH_OUT-1:DATA_WIDTH_IN] <= {(DATA_WIDTH_OUT - DATA_WIDTH_IN){1'b0}};
+        end
     end
 
 end

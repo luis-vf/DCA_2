@@ -9,7 +9,8 @@ module controller(
     output MemWrite,
     output [1:0]MemtoReg,
     output branch_ctrl,
-    output [2:0]ALUop
+    output [2:0]ALUop,
+    output IsSigned
 );
 
 localparam aluop_rtype = 3'h0;
@@ -74,153 +75,156 @@ always @ ( * ) begin
     MemWrite_t      <= 1'b0;
     MemtoReg_t      <= 2'h0;
     ALUop_t         <= 3'h0;
+    IsSigned        <= 1'b0;
 
     case (OPCODE)
         rtype:  begin
-					 RegDST_t <= 2'b1;
+					      RegDST_t <= 2'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_rtype; end
 
         branch_ri:begin
-						branch_ctrl_t <= 1'b1;
-						ALUop_t <= aluop_sub; end
+						     branch_ctrl_t <= 1'b1;
+						     ALUop_t <= aluop_sub; end
 
         j:      jump_t <= 1'b1;
 
         jal:    begin
-					 jump_t <= 1'b1;
+					      jump_t <= 1'b1;
                 RegWrite_t <= 1'b1;
-					 RegDST_t <= 2'h2;
+					      RegDST_t <= 2'h2;
                 MemtoReg_t <= 2'h2; end
 
         blez:   begin
-					 branch_ctrl_t <= 1'b1;
+					      branch_ctrl_t <= 1'b1;
                 ALUop_t <= aluop_sub; end
 
         bgtz:   begin
-					 branch_ctrl_t <= 1'b1;
+					      branch_ctrl_t <= 1'b1;
                 ALUop_t <= aluop_sub; end
 
         beq:   begin
-					 branch_ctrl_t <= 1'b1;
+					      branch_ctrl_t <= 1'b1;
                 ALUop_t <= aluop_sub; end
 
         bne:   begin
-					 branch_ctrl_t <= 1'b1;
+					      branch_ctrl_t <= 1'b1;
                 ALUop_t <= aluop_sub; end
 
         addi:   begin
-				ALUSrc_t <= 1'b1;
+                IsSigned <= 1'b1;
+				        ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         addiu:  begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         slti:   begin
-					 ALUSrc_t <= 1'b1;
+                IsSigned <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_slt; end
 
         sltiu:  begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_slt; end
 
         andi:   begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_and; end
 
         ori:   begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_or; end
 
         xori:   begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_xor; end
 
         lw:     begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lwl:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lwr:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lh:     begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lbu:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lhu:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lb:     begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemtoReg_t <= 2'h1;
                 RegWrite_t <= 1'b1;
                 MemRead_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         lui:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 RegWrite_t <= 1'b1;
                 ALUop_t <= aluop_sll; end
 
         sb:     begin
-					 ALUSrc_t <= 1'b1;
+					 	    ALUSrc_t <= 1'b1;
                 MemWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         sh:     begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         sw:     begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
         swr:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
 
         swl:    begin
-					 ALUSrc_t <= 1'b1;
+					      ALUSrc_t <= 1'b1;
                 MemWrite_t <= 1'b1;
                 ALUop_t <= aluop_add; end
 
